@@ -1,0 +1,41 @@
+{
+  "comment": "User-editable tiers for the economy filter block (tools/filter_update.py). A BaseType enters the highest tier whose min_chaos its live chaos value meets. 'style' lines are copied verbatim into each generated Show rule — edit them freely. Syntax (poewiki 'Item filter' guide): SetFontSize 1-45; Set*Color R G B [A] with 0-255 components; PlayAlertSound <1-16> [0-300]; PlayEffect <Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple> [Temp]; MinimapIcon <0-2, 0=largest> <same colors> <Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse>.",
+  "tiers": [
+    {
+      "id": "top",
+      "min_chaos": 100,
+      "style": [
+        "SetFontSize 45",
+        "SetTextColor 255 255 255 255",
+        "SetBorderColor 255 100 100 255",
+        "SetBackgroundColor 200 40 40 255",
+        "PlayAlertSound 6 300",
+        "PlayEffect Red",
+        "MinimapIcon 0 Red Star"
+      ]
+    },
+    {
+      "id": "high",
+      "min_chaos": 20,
+      "style": [
+        "SetFontSize 42",
+        "SetTextColor 255 255 255 255",
+        "SetBorderColor 255 200 100 255",
+        "SetBackgroundColor 120 70 20 255",
+        "PlayAlertSound 1 300",
+        "PlayEffect Yellow",
+        "MinimapIcon 1 Yellow Circle"
+      ]
+    },
+    {
+      "id": "notable",
+      "min_chaos": 5,
+      "style": [
+        "SetFontSize 38",
+        "SetBorderColor 150 150 255 255",
+        "PlayEffect Blue Temp",
+        "MinimapIcon 2 Blue Circle"
+      ]
+    }
+  ]
+}

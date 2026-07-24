@@ -1,0 +1,9 @@
+{
+  "league": "Test League",
+  "voyage_zone_patterns": ["^The Sunken "],
+  "npc_line_patterns": [
+    {"id": "maro", "pattern": "flame hungers", "kind": "encounter"}
+  ],
+  "town_zones": ["Lioneye's Watch", "Overseer's Tower"],
+  "town_substrings": ["Hideout"]
+}

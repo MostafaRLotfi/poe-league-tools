@@ -305,6 +305,32 @@ python tools/pnl.py                # realized vs expected — tune the haircut
 python tools/meta.py               # ladder meta ranker (ascendancies/skills)
 ```
 
+## Second-screen companions (3.29)
+
+Laptop-side tools for playing with the game on the other machine.
+All read-only (Client.txt / clipboard paste / official APIs); every
+in-game action stays yours.
+
+```
+pbpaste | python tools/upgrade_check.py     # Ctrl+C item vs all 4 party PoBs
+python tools/chaos_recipe.py --account You --tab 3
+                                            # dump-tab sets + shopping list
+python tools/filter_update.py --live --filter My.filter
+                                            # economy block spliced into filter
+python tools/allflame.py report             # voyages/encounters per hour
+python tools/allflame.py candidates         # day-1: find the mechanic's log lines
+python tools/allflame.py loot 15c "chest"   # log drops → chaos per encounter
+```
+
+`upgrade_check` caches decoded party PoBs beside the bundle (offline
+after the first run) and prints per-slot deltas + an honest
+defensive-stat verdict (it is not a DPS calculator). `chaos_recipe`
+needs the `POESESSID` env var (never stored). `filter_update` owns only
+a marked block at the top of your filter — regenerate as prices move,
+then reload the filter in game yourself. `allflame`'s mechanic patterns
+ship as placeholders: run `candidates` after your first session tonight
+and paste the real NPC/zone lines into `data/3.29/mechanic_lines.json`.
+
 Scanner finds negative-cycle arbitrage and cross-source spreads over the
 latest snapshots, filters price-fixed quotes, and sizes by liquidity and
 bankroll (`market/config.json`; league is `Mirage` until 3.29 launches).
@@ -376,8 +402,12 @@ leveling guide (differences are usually deliberate skips).
 - [ ] **Before Jul 20:** Mirage rehearsal — 24 h daemon run, tune the
       price-fixing filter, capture real clipboard fixtures (see DECISIONS.md)
 - [ ] **Jul 16:** feed patch notes to the advisor; generate the watchlist
+- [x] Second-screen companions: PoB upgrade checker, chaos-recipe
+      assistant, economy filter block, Allflame encounter tracker
 - [ ] **Jul 24:** set the 3.29 league in `market/config.json`; re-verify
-      poe.ninja endpoints + meta.py after launch
+      poe.ninja endpoints + meta.py after launch; calibrate
+      `data/3.29/mechanic_lines.json` (`tools/allflame.py candidates`);
+      verify the stash endpoint shape (`market/stashapi.py` VERIFY)
 
 ## Credits
 

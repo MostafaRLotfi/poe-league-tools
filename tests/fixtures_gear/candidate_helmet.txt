@@ -1,0 +1,22 @@
+Item Class: Helmets
+Rarity: Rare
+Brood Dome
+Iron Hat
+--------
+Armour: 120 (augmented)
+--------
+Requirements:
+Level: 60
+Str: 64
+--------
+Sockets: R-R-R-B
+--------
+Item Level: 72
+--------
++1 to Level of Socketed Minion Gems (implicit)
+--------
++54 to maximum Life
++13% to Fire Resistance
++42% to Cold Resistance
+12% increased Stun and Block Recovery
+--------

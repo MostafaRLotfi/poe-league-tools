@@ -1,0 +1,16 @@
+Item Class: Rings
+Rarity: Rare
+Storm Coil
+Two-Stone Ring
+--------
+Requirements:
+Level: 36
+--------
+Item Level: 68
+--------
++12% to Fire and Cold Resistances (implicit)
+--------
++68 to maximum Life
++30% to Fire Resistance
++15% to Lightning Resistance
+--------

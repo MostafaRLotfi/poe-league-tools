@@ -324,6 +324,41 @@ DECISIONS.md convention). Newest at the bottom.
    rerun `tools/refresh_repoe.py` once the fork publishes 3.29 data (check
    the version line the tool prints).
 
+## 2026-07-24 second-screen companions (launch day, 4 parallel workstreams)
+
+Four laptop-side tools built the morning of the 3.29 launch, same
+parallel-ownership model as the original build (rows + data formats
+added to docs/INTERFACES.md). All are CLI-first, stdlib-only, offline-
+tested (34/34 suites), and keep every game/trade action human.
+
+- **Upgrade checker** (`tools/upgrade_check.py`): Ctrl+C item vs the
+  equivalent slot in all four party PoBs. Live pobb.in exports were
+  fetched during the build (network-fixture policy), which caught two
+  would-be bugs: `activeItemSet` matches ItemSet **id**, not document
+  order (real export order: 2,3,4,8,6,1,7,5), and influence markers
+  ("Hunter Item") sit before `Implicits: N` — naive counting spilled
+  eldritch implicits into the explicit-mod diff. Decoded PoB XML is
+  cached as `<Player>.pobxml` beside the bundle; verdict is an honest
+  defensive-stat heuristic, not a DPS calc.
+- **Chaos-recipe assistant** (`tools/chaos_recipe.py`): legacy
+  session-cookie stash endpoint over the shared 2 s rate gate
+  (`RateLimitedFetcher.get_json` gained backwards-compatible
+  `extra_headers`). POESESSID env-only, never persisted, degrade path
+  prints cookie instructions. OAuth was rejected for now: the legacy
+  endpoint matches the existing livesearch auth posture and needs no
+  app registration. Endpoint shape VERIFY at launch.
+- **Filter feedback loop** (`tools/filter_update.py`): marked economy
+  block spliced at the top of the user's filter (first-match-wins), so
+  we never regenerate or fork their base filter — NeverSink stays
+  theirs, we own 40 lines between two markers. Uniques excluded v1
+  (filters match BaseType, not unique names). Reload stays manual.
+- **Allflame tracker** (`tools/allflame.py`): mechanic zone/NPC
+  patterns are UNKNOWABLE pre-launch, so the config ships VERIFY
+  placeholders plus a `candidates` calibration command (ranks non-town
+  NPC dialogue by frequency, suppresses speakers heard more in town).
+  Loot is logged manually (`loot 15c "sunken chest"`) — Client.txt has
+  no drop data, and we don't pretend otherwise.
+
 ## 2026-07-21 spoken narration (overlay)
 
 - **Narration is TTS over existing Client.txt data — no screenshots.**

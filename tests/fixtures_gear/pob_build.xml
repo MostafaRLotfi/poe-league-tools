@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hand-authored PoB export fixture, shaped like the live-verified
+     pobb.in export of 2026-07-24: activeItemSet matches an ItemSet's
+     id attribute (NOT document order - the decoy set is listed first),
+     Slot itemId="0" means empty, "... Abyssal Socket N" slots are
+     jewel sub-slots and must be ignored. -->
+<PathOfBuilding>
+  <Build level="90" className="Witch" ascendClassName="Necromancer"/>
+  <Items activeItemSet="1" useSecondWeaponSet="false">
+    <Item id="1">
+Rarity: RARE
+Doom Halo
+Iron Hat
+Item Level: 70
+Quality: 20
+Sockets: R-R-R-B
+LevelReq: 60
+Implicits: 1
++1 to Level of Socketed Minion Gems
++(30-50) to maximum Life
++25% to Fire Resistance
+{crafted}+30% to Cold Resistance
+    </Item>
+    <Item id="2">
+Rarity: RARE
+Hate Shell
+Full Wyrmscale
+Item Level: 65
+Quality: 20
+Sockets: R-R-R-B-B-B
+LevelReq: 50
+Implicits: 0
++80 to maximum Life
++30% to Cold Resistance
+    </Item>
+    <Item id="3">
+Rarity: RARE
+Loop of Storms
+Coral Ring
+Item Level: 55
+LevelReq: 40
+Implicits: 1
++(20-30) to maximum Life
++45 to maximum Life
++18% to Lightning Resistance
+    </Item>
+    <Item id="4">
+Rarity: RARE
+Gloom Band
+Iron Ring
+Item Level: 60
+LevelReq: 30
+Implicits: 1
+Adds 1 to 4 Physical Damage to Attacks
++60 to maximum Life
++35% to Fire Resistance
++10% to Chaos Resistance
+    </Item>
+    <Item id="5">
+Rarity: RARE
+Storm Song
+Carved Wand
+Item Level: 50
+LevelReq: 35
+Implicits: 1
+(8-12)% increased Spell Damage
+{tags:caster_damage,damage,caster}{range:0.5}(40-60)% increased Spell Damage
++35 to maximum Life
+    </Item>
+    <Item id="99">
+Rarity: RARE
+Decoy Cap
+Iron Hat
+Item Level: 10
+Implicits: 0
++5 to maximum Life
+    </Item>
+    <ItemSet id="2" title="Decoy set" useSecondWeaponSet="false">
+      <Slot itemPbURL="" itemId="99" name="Helmet"/>
+    </ItemSet>
+    <ItemSet id="1" title="Endgame" useSecondWeaponSet="false">
+      <Slot itemPbURL="" itemId="1" name="Helmet"/>
+      <Slot itemPbURL="" itemId="2" name="Body Armour"/>
+      <Slot itemPbURL="" itemId="3" name="Ring 1"/>
+      <Slot itemPbURL="" itemId="4" name="Ring 2"/>
+      <Slot itemPbURL="" itemId="5" name="Weapon 1"/>
+      <Slot itemPbURL="" itemId="0" name="Weapon 2"/>
+      <Slot itemPbURL="" itemId="0" name="Gloves"/>
+      <Slot itemPbURL="" itemId="0" name="Helmet Abyssal Socket 1"/>
+    </ItemSet>
+  </Items>
+</PathOfBuilding>

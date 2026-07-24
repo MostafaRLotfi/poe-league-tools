@@ -1,0 +1,32 @@
+{
+  "_comment": "Hand-authored sample of the community-documented legacy get-stash-items response shape (see market/stashapi.py VERIFY note). Not a live capture.",
+  "numTabs": 4,
+  "tabs": [
+    {"n": "currency", "i": 0, "type": "CurrencyStash"},
+    {"n": "dump", "i": 1, "type": "NormalStash"},
+    {"n": "CHAOS", "i": 2, "type": "QuadStash"},
+    {"n": "maps", "i": 3, "type": "NormalStash"}
+  ],
+  "items": [
+    {"name": "", "typeLine": "Vaal Regalia", "baseType": "Vaal Regalia", "ilvl": 70, "identified": false, "frameType": 2, "w": 2, "h": 3},
+    {"name": "", "typeLine": "Hubris Circlet", "baseType": "Hubris Circlet", "ilvl": 62, "identified": false, "frameType": 2, "w": 2, "h": 2},
+    {"name": "", "typeLine": "Sorcerer Gloves", "baseType": "Sorcerer Gloves", "ilvl": 65, "identified": false, "frameType": 2, "w": 2, "h": 2},
+    {"name": "", "typeLine": "Titan Greaves", "baseType": "Titan Greaves", "ilvl": 74, "identified": false, "frameType": 2, "w": 2, "h": 2},
+    {"name": "", "typeLine": "Leather Belt", "baseType": "Leather Belt", "ilvl": 60, "identified": false, "frameType": 2, "w": 2, "h": 1},
+    {"name": "", "typeLine": "Onyx Amulet", "baseType": "Onyx Amulet", "ilvl": 68, "identified": false, "frameType": 2, "w": 1, "h": 1},
+    {"name": "", "typeLine": "Gold Ring", "baseType": "Gold Ring", "ilvl": 66, "identified": false, "frameType": 2, "w": 1, "h": 1},
+    {"name": "", "typeLine": "Thicket Bow", "baseType": "Thicket Bow", "ilvl": 70, "identified": false, "frameType": 2, "w": 2, "h": 4},
+    {"name": "", "typeLine": "Jewelled Foil", "baseType": "Jewelled Foil", "ilvl": 63, "identified": false, "frameType": 2, "w": 1, "h": 4},
+    {"name": "", "typeLine": "Imbued Wand", "baseType": "Imbued Wand", "ilvl": 64, "identified": false, "frameType": 2, "w": 1, "h": 3},
+    {"name": "", "typeLine": "Pinnacle Tower Shield", "baseType": "Pinnacle Tower Shield", "ilvl": 69, "identified": false, "frameType": 2, "w": 2, "h": 4},
+    {"name": "", "typeLine": "Penetrating Arrow Quiver", "baseType": "Penetrating Arrow Quiver", "ilvl": 70, "identified": false, "frameType": 2, "w": 2, "h": 3},
+    {"name": "", "typeLine": "Coral Ring", "baseType": "Coral Ring", "ilvl": 59, "identified": false, "frameType": 2, "w": 1, "h": 1},
+    {"name": "", "typeLine": "Amethyst Ring", "baseType": "Amethyst Ring", "ilvl": 75, "identified": false, "frameType": 2, "w": 1, "h": 1},
+    {"name": "Loath Loop", "typeLine": "Diamond Ring", "baseType": "Diamond Ring", "ilvl": 65, "identified": true, "frameType": 2, "w": 1, "h": 1},
+    {"name": "Corpse Cord", "typeLine": "Rustic Sash", "baseType": "Rustic Sash", "ilvl": 70, "identified": true, "frameType": 2, "w": 2, "h": 1},
+    {"name": "Dusk Shell", "typeLine": "Astral Plate", "baseType": "Astral Plate", "ilvl": 71, "identified": true, "frameType": 2, "w": 2, "h": 3},
+    {"name": "", "typeLine": "Sparkling Sapphire Ring of the Whelpling", "baseType": "Sapphire Ring", "ilvl": 70, "identified": true, "frameType": 1, "w": 1, "h": 1},
+    {"name": "", "typeLine": "Voidforged Relic", "baseType": "Voidforged Relic", "ilvl": 70, "identified": false, "frameType": 2, "w": 1, "h": 1},
+    {"name": "", "typeLine": "Chaos Orb", "baseType": "Chaos Orb", "ilvl": 0, "identified": true, "frameType": 5, "w": 1, "h": 1}
+  ]
+}

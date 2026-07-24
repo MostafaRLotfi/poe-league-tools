@@ -1,0 +1,21 @@
+Item Class: Wands
+Rarity: Rare
+Gale Spire
+Engraved Wand
+--------
+Wand
+Physical Damage: 14-26
+Critical Strike Chance: 7.00%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 40
+Int: 78
+--------
+Item Level: 52
+--------
+12% increased Spell Damage (implicit)
+--------
++48 to maximum Life
++22% to Cold Resistance
+--------

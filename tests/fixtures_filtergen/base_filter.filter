@@ -1,0 +1,25 @@
+# My league filter (NeverSink-ish fixture)
+# ================ preamble the tool must never touch ================
+
+Show
+    Class "Stackable Currency"
+    BaseType "Mirror of Kalandra"
+    SetFontSize 45
+
+# >>> poe-league-tools economy block — generated 2026-01-01T00:00:00Z — league OldLeague
+# >>> do not edit inside this block; regenerate with tools/filter_update.py
+
+# tier top (>= 100c): 1 basetypes
+Show
+    BaseType == "Stale Orb"
+    SetFontSize 45
+
+# <<< poe-league-tools economy block
+
+Show
+    Class "Divination Card"
+    SetFontSize 36
+
+Hide
+    BaseType "Scroll of Wisdom"
+    SetFontSize 18

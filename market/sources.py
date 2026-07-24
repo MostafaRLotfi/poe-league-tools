@@ -157,16 +157,22 @@ class RateLimitedFetcher:
                 now = self._clock()
         _GATE["last"] = now
 
-    def get_json(self, url: str):
-        """GET ``url`` and return the decoded JSON payload."""
+    def get_json(self, url: str, extra_headers: dict | None = None):
+        """GET ``url`` and return the decoded JSON payload.
+
+        ``extra_headers`` (optional) are merged into the request headers
+        (e.g. a session Cookie); they never override the User-Agent.
+        """
         retries = 0
         with _LOCK:                       # global concurrency 1
             while True:
                 self._throttle()
-                request = urllib.request.Request(url, headers={
+                headers = dict(extra_headers) if extra_headers else {}
+                headers.update({
                     "User-Agent": self._user_agent,
                     "Accept": "application/json",
                 })
+                request = urllib.request.Request(url, headers=headers)
                 try:
                     with self._opener.open(request, timeout=self._timeout) as resp:
                         body = resp.read()

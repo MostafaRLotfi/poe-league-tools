@@ -1,0 +1,71 @@
+[
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Divine Orb", "buy": 505.0, "sell": 500.0,
+   "buy_vol": 250.0, "sell_vol": 300.0,
+   "raw": "{\"currencyTypeName\":\"Divine Orb\"}"},
+
+  {"ts": "2026-07-23T00:00:00Z", "source": "other-source", "league": "TestLeague",
+   "item": "Sacred Orb", "buy": null, "sell": 25.0,
+   "buy_vol": null, "sell_vol": 40.0,
+   "raw": {"currencyTypeName": "Sacred Orb"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Sacred Orb", "buy": 155.0, "sell": 150.0,
+   "buy_vol": 45.0, "sell_vol": 50.0,
+   "raw": {"currencyTypeName": "Sacred Orb"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Fracturing Orb", "buy": 60.0, "sell": null,
+   "buy_vol": 10.0, "sell_vol": null,
+   "raw": {"currencyTypeName": "Fracturing Orb"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Tempering Orb", "buy": 32.0, "sell": 30.0,
+   "buy_vol": 3.0, "sell_vol": 2.0,
+   "raw": {"currencyTypeName": "Tempering Orb"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Awakened Sextant", "buy": 30.0, "sell": 30.0,
+   "buy_vol": null, "sell_vol": null,
+   "raw": {"currencyTypeName": "Awakened Sextant"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Titanic Scarab", "buy": 25.0, "sell": 25.0,
+   "buy_vol": 800.0, "sell_vol": 800.0,
+   "raw": {"id": "titanic-scarab", "primaryValue": 25.0, "volumePrimaryValue": 800.0}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Deafening Essence of Contempt", "buy": 6.0, "sell": 6.0,
+   "buy_vol": 678.0, "sell_vol": 678.0,
+   "raw": {"id": "deafening-essence-of-contempt", "primaryValue": 6.0, "volumePrimaryValue": 678.0}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Whispering Essence of Woe", "buy": 1.0, "sell": 1.0,
+   "buy_vol": 900.0, "sell_vol": 900.0,
+   "raw": {"id": "whispering-essence-of-woe", "primaryValue": 1.0, "volumePrimaryValue": 900.0}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "The Enlightened", "buy": 25.0, "sell": 25.0,
+   "buy_vol": 600.0, "sell_vol": 600.0,
+   "raw": {"id": "the-enlightened", "primaryValue": 25.0, "volumePrimaryValue": 600.0}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Shavronne's Wrappings 6L", "buy": 900.0, "sell": 900.0,
+   "buy_vol": 12.0, "sell_vol": 12.0,
+   "raw": {"name": "Shavronne's Wrappings", "links": 6, "chaosValue": 900.0, "listingCount": 12}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Bottled Faith", "buy": 400.0, "sell": 400.0,
+   "buy_vol": 30.0, "sell_vol": 30.0,
+   "raw": {"name": "Bottled Faith", "baseType": "Sulphur Flask", "chaosValue": 400.0, "listingCount": 30}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "Blessing of Chayula", "buy": null, "sell": null,
+   "buy_vol": null, "sell_vol": null,
+   "raw": {"currencyTypeName": "Blessing of Chayula"}},
+
+  {"ts": "2026-07-24T00:00:00Z", "source": "poe.ninja", "league": "TestLeague",
+   "item": "chaos->divine", "buy": null, "sell": 0.002,
+   "buy_vol": null, "sell_vol": 50000.0,
+   "raw": {"pair": true}}
+]

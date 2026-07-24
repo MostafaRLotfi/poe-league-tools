@@ -1,0 +1,33 @@
+{
+  "league": "Curse of the Allflame",
+  "_comment": "VERIFY at launch (2026-07-24): the league went live TODAY, so every voyage_zone_pattern and npc_line_pattern below is a PRE-LAUNCH GUESS derived from the patch-note summary (data/3.29/summary.json, id mechanic-allflame-league: chart seafloor areas, run Voyages, split items at the ship's heart, spend Ducats). Replace them with real zone names / NPC lines on launch night -- see 'notes'. town_zones ARE stable across leagues and safe to trust.",
+  "voyage_zone_patterns": [
+    "^The Sunken ",
+    "Voyage",
+    "Seafloor",
+    "Allflame"
+  ],
+  "_comment_voyage": "VERIFY: seafloor/Voyage area names are unknown pre-launch. Patterns are regexes matched with re.search against the zone name from 'You have entered <Zone>.' lines. After your first session, check recent 'You have entered' lines in Client.txt for the real seafloor area names and replace these guesses.",
+  "npc_line_patterns": [
+    {
+      "id": "example-encounter",
+      "pattern": "Allflame",
+      "kind": "encounter",
+      "_comment": "VERIFY: placeholder. The mechanic NPC's name and dialogue are unknown pre-launch. Pattern is a regex matched with re.search against the whole system chat payload 'Speaker: text'. Run the candidates subcommand (see notes) to find the real lines, then give each a stable id."
+    }
+  ],
+  "town_zones": [
+    "Lioneye's Watch",
+    "The Forest Encampment",
+    "The Sarn Encampment",
+    "Highgate",
+    "Overseer's Tower",
+    "The Bridge Encampment",
+    "Oriath Docks",
+    "Oriath",
+    "Karui Shores"
+  ],
+  "_comment_towns": "Acts 6, 8 and 9 reuse the act 1/3/4 town names (Lioneye's Watch, The Sarn Encampment, Highgate) verbatim in Client.txt, so one entry covers both. Any zone whose name contains a town_substrings entry (e.g. 'Kirac's Hideout') also counts as town.",
+  "town_substrings": ["Hideout"],
+  "notes": "HOW TO CALIBRATE (launch night): 1) Play one mapping session engaging the league mechanic. 2) Run `.venv/bin/python tools/allflame.py candidates` (add --log <path> if Client.txt isn't auto-found) -- it ranks NPC dialogue heard OUTSIDE towns/hideouts by frequency. 3) Paste the real mechanic NPC lines into npc_line_patterns (one entry per distinct encounter cue, regex-escape as needed) and the real seafloor/Voyage zone names into voyage_zone_patterns. 4) Re-run `tools/allflame.py report` and the counters go live. Entries marked VERIFY are guesses until you do this."
+}

@@ -51,6 +51,10 @@ this file wins; propose changes here rather than silently diverging.
 | craft | `craft/*.py`, `tools/refresh_repoe.py`, `tools/craft_check.py`, `data/repoe_craft.json`, `data/craft_recipes.json`, `tests/fixtures_craft/`, `tests/test_craft.py` |
 | layouts | `overlay/layout_index.py`, `overlay/layout_panel.py`, `overlay/ui_state.py`, `tools/fetch_layouts.py`, `tools/crosscheck_routes.py`, `data/exileui/`, `tests/test_layouts.py` |
 | integration (later) | `overlay/main.py`, `overlay/overlay_window.py`, `overlay/config.json`, `README.md`, `tools/check.py`, `requirements.txt`, `setup_pc.bat` |
+| upgrade-checker | `buildgen/gear.py`, `tools/upgrade_check.py`, `tests/fixtures_gear/`, `tests/test_gear.py` |
+| chaos-recipe | `market/stashapi.py`, `tools/chaos_recipe.py`, `tests/fixtures_stash/`, `tests/test_chaos_recipe.py` |
+| filtergen | `filtergen/*.py`, `tools/filter_update.py`, `data/filter_tiers.json`, `tests/fixtures_filtergen/`, `tests/test_filtergen.py` |
+| mechanic-tracker | `overlay/mechanic_tracker.py`, `tools/allflame.py`, `data/3.29/mechanic_lines.json`, `tests/fixtures_mechanic/`, `tests/test_mechanic_tracker.py` |
 
 Do not create or edit files outside your row. `data/` files not listed are
 free for their owner. Directories are created implicitly by writing files.
@@ -230,6 +234,62 @@ Every entry cites `data/3.29/summary.json` or is tagged `"source": "assumption"`
   "change": "...", "direction": "buff|nerf|neutral", "quote": "...", "source": "..."}]}`
 Produced by `advisor/summarize.py` from pasted patch notes (July 16).
 Consumers must degrade when the file is absent.
+
+### Upgrade checker (buildgen/gear.py + tools/upgrade_check.py)
+
+`gear.parse_pob_item(text)` parses PoB `<Item>` text blocks into dicts
+shape-compatible with `itemtext.parse` output (plus `implicit_mods` and
+an `estimated` flag when `(lo-hi)` ranges were resolved via `{range:X}`
+or midpoint). `gear.slot_map(root)` maps the ACTIVE `<ItemSet>` (matched
+by **id**, not document order — live-verified against the party's pobb.in
+exports) to parsed items; `gear.member_builds(bundle)` resolves each
+member's PoB and caches decoded XML as `<Player>.pobxml` beside the
+bundle so later runs are offline (`--refresh` refetches). `compare()`
+diffs life/res/movespeed/links + mod gains/losses; its verdict score is
+a defensive-stat heuristic, NOT a PoB DPS calculation. Optional LLM
+one-liner (feature `upgrade_check`, standard tier) degrades silently.
+
+### Stash API + chaos recipe (market/stashapi.py + tools/chaos_recipe.py)
+
+`fetch_stash_tab(account, league, tab_index)` GETs the legacy
+`character-window/get-stash-items` endpoint with `Cookie: POESESSID`
+(env var only, never persisted; missing -> `StashUnavailable` with
+instructions, mirroring livesearch). Endpoint shape is community-
+documented — VERIFY at 3.29 launch. Reuses the global
+`RateLimitedFetcher` gate; `get_json` grew an optional `extra_headers`
+kwarg (merged into request headers, never overriding the User-Agent).
+Recipe math is pure: rare + ilvl 60–74, slot classification via
+repoe base->class lookup with keyword fallback, sets need
+body/helm/gloves/boots/belt/amulet/2 rings + one 2H (incl. bow) or two
+1H-equivalents (shield counts); unid full set = 2c, mixed = 1c.
+
+### Economy filter block (filtergen/ + tools/filter_update.py)
+
+`filtergen.economy` turns snapshot rows into a marked first-match-wins
+block spliced at the TOP of a loot filter: tiers from
+`data/filter_tiers.json` (authored `min_chaos` thresholds + style
+lines), `BaseType ==` exact-match rules (div cards additionally carry
+`Class == "Divination Cards"`), links-suffixed and unique-overview rows
+excluded. Markers:
+`# >>> poe-league-tools economy block — generated <ts> — league <name>`
+… `# <<< poe-league-tools economy block`. `splice()` replaces an
+existing region byte-preserving and idempotently; no markers ->
+refusal unless `--install`. Price sources: `--offline-rows` >
+`--live` (NinjaClient) > newest market.db rows. The tool only writes
+filter files; in-game reload is always manual.
+
+### Mechanic tracker (overlay/mechanic_tracker.py + tools/allflame.py)
+
+Pure logic, clock-free (time parsed from Client.txt line timestamps);
+config `data/3.29/mechanic_lines.json`:
+`{league, voyage_zone_patterns, npc_line_patterns:
+[{id, pattern, kind}], town_zones, notes}` — mechanic patterns ship as
+VERIFY placeholders until launch-night calibration via
+`tools/allflame.py candidates` (ranks field NPC dialogue, suppresses
+vendor chatter). Encounters dedupe per (pattern id, zone visit);
+active time excludes towns/hideouts. Manual loot log:
+`runs/allflame_loot.jsonl` rows `{ts, chaos, raw, note}` via
+`tools/allflame.py loot 15c <note>` (`Ndiv` needs `--div-rate`).
 
 ## Reserved overlay/config.json keys (wired by integration)
 
