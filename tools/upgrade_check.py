@@ -127,6 +127,11 @@ def _llm_note(candidate: dict, reports: list[dict]) -> str | None:
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("file", nargs="?", default=None,
                     help="item text file, '-' for stdin (default: stdin "

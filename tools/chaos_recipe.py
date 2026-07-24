@@ -84,6 +84,11 @@ def resolve_tab_index(args, out) -> int | None:
 
 
 def main(argv=None, out=sys.stdout) -> int:
+    if out is sys.stdout and hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
     ap = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)

@@ -149,12 +149,12 @@ try:
     p = subprocess.run(
         [sys.executable, tool, "loot", "10c", "test", "drop",
          "--runs-dir", runs],
-        capture_output=True, text=True, env=env, cwd=ROOT)
+        capture_output=True, text=True, encoding="utf-8", env=env, cwd=ROOT)
     assert p.returncode == 0 and "10.0c" in p.stdout, (p.stdout, p.stderr)
     p = subprocess.run(
         [sys.executable, tool, "report", "--log", LOG, "--config", CFG_PATH,
          "--runs-dir", runs],
-        capture_output=True, text=True, env=env, cwd=ROOT)
+        capture_output=True, text=True, encoding="utf-8", env=env, cwd=ROOT)
     assert p.returncode == 0, (p.stdout, p.stderr)
     out = p.stdout
     assert "voyages:           2" in out and "1.71/h" in out, out
@@ -164,14 +164,14 @@ try:
     p = subprocess.run(
         [sys.executable, tool, "candidates", "--log", LOG,
          "--config", CFG_PATH],
-        capture_output=True, text=True, env=env, cwd=ROOT)
+        capture_output=True, text=True, encoding="utf-8", env=env, cwd=ROOT)
     assert p.returncode == 0, (p.stdout, p.stderr)
     assert "4 | Allbinder Maro | The flame hungers" in p.stdout, p.stdout
     assert "Nessa" not in p.stdout
     assert "mechanic_lines.json" in p.stdout, "calibration hint missing"
     p = subprocess.run(
         [sys.executable, tool, "loot", "3div", "--runs-dir", runs],
-        capture_output=True, text=True, env=env, cwd=ROOT)
+        capture_output=True, text=True, encoding="utf-8", env=env, cwd=ROOT)
     assert p.returncode != 0 and "div-rate" in p.stderr, (p.stdout, p.stderr)
 finally:
     shutil.rmtree(tmp)

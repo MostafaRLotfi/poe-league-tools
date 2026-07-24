@@ -110,6 +110,11 @@ def load_rows(args, league: str) -> tuple[list[dict] | None, str]:
 
 
 def main(argv=None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
     parser = argparse.ArgumentParser(
         description=__doc__.splitlines()[0],
         epilog="The tool only writes filter files; reloading is manual.")
