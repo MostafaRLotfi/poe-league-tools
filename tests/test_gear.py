@@ -233,7 +233,8 @@ try:
         [sys.executable, os.path.join(ROOT, "tools", "upgrade_check.py"),
          "--bundle", bundle_path, "--no-llm", "--file",
          os.path.join(FIX, "candidate_wand.txt")],
-        capture_output=True, text=True, cwd=ROOT, env=env, timeout=60)
+        capture_output=True, text=True, encoding="utf-8", cwd=ROOT,
+        env=env, timeout=60)
     assert proc.returncode == 0, proc.stderr
     out = proc.stdout
     assert "Gale Spire" in out and "Storm Song" in out
@@ -245,7 +246,8 @@ try:
         [sys.executable, os.path.join(ROOT, "tools", "upgrade_check.py"),
          "--bundle", bundle_path, "--no-llm", "--member", "carry",
          "--json", "--file", os.path.join(FIX, "candidate_ring.txt")],
-        capture_output=True, text=True, cwd=ROOT, env=env, timeout=60)
+        capture_output=True, text=True, encoding="utf-8", cwd=ROOT,
+        env=env, timeout=60)
     assert proc.returncode == 0, proc.stderr
     payload = json.loads(proc.stdout)
     assert [m["player"] for m in payload["members"]] == ["Carry"]
@@ -261,7 +263,8 @@ try:
         input="Item Class: Life Flasks\nRarity: Magic\n"
               "Bubbling Divine Life Flask of Staunching\n--------\n"
               "Item Level: 60\n--------\n",
-        capture_output=True, text=True, cwd=ROOT, env=env, timeout=60)
+        capture_output=True, text=True, encoding="utf-8", cwd=ROOT,
+        env=env, timeout=60)
     assert proc.returncode == 0, proc.stderr
     assert "isn't supported" in proc.stdout
 finally:
