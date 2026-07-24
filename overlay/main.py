@@ -529,6 +529,7 @@ def main(argv=None):
         window.move(x, y)
 
     place(win, state.get("card", "pos"), (40, 140))
+    win.fit_to_screen()
     if panel is not None:
         geo = app.primaryScreen().availableGeometry()
         place(panel, state.get("layouts", "pos"),

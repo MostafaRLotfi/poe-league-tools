@@ -47,6 +47,19 @@ def clamp_size(w, h, min_w, max_w, min_h, max_h):
             max(min_h, min(max_h, int(h))))
 
 
+def clamp_position(x, y, w, h, left, top, area_w, area_h):
+    """Move a window fully inside an available screen rectangle.
+
+    The bottom-right resize grip is only reachable when both the window size
+    and its position fit.  If the window is as large as the screen, this
+    naturally moves it to the screen origin.
+    """
+    max_x = left + max(0, int(area_w) - int(w))
+    max_y = top + max(0, int(area_h) - int(h))
+    return (max(int(left), min(max_x, int(x))),
+            max(int(top), min(max_y, int(y))))
+
+
 def valid_size(value):
     """[w, h] positive ints -> (w, h); anything else -> None. A stale or
     hand-broken size must never resize the window to zero/negative."""

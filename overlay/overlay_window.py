@@ -15,13 +15,13 @@ QSS builders, so the color/sizing logic is unit-tested headless.
 import html
 
 from PyQt6.QtCore import QEvent, Qt, QTimer
-from PyQt6.QtWidgets import (QAbstractScrollArea, QApplication, QFrame,
-                             QHBoxLayout, QLabel, QPushButton, QScrollArea,
-                             QSizePolicy, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QLabel,
+                             QPushButton, QScrollArea, QSizePolicy,
+                             QVBoxLayout, QWidget)
 
 import theme
 from build_notes import select_note, select_passives
-from ui_state import clamp_scale, clamp_size, valid_size
+from ui_state import clamp_position, clamp_scale, clamp_size, valid_size
 
 # Resize bounds for the card. Wide enough to read a step, narrow enough to
 # tuck into a screen edge; the minimum height is derived from the header +
@@ -88,6 +88,7 @@ class OverlayWindow(QWidget):
         self._user_width = None
         self._user_height = None
         self._laying = False                 # reentrancy guard for internal resizes
+        self._refit_pending = False          # coalesce deferred layout settles
 
         self._state = state
         self._cfg = cfg
@@ -290,8 +291,32 @@ class OverlayWindow(QWidget):
         sb = self.scroll.verticalScrollBar()
         if sb.isVisible():
             vw += sb.width()
-        ch = (lay.heightForWidth(vw) if lay and lay.hasHeightForWidth()
-              else content.sizeHint().height())
+        # QVBoxLayout.heightForWidth() undercounts rich, word-wrapped
+        # QLabels inside a resizable QScrollArea. Measure the visible label
+        # items directly instead. Ignore the trailing stretch: its natural
+        # height is zero.
+        margins = lay.contentsMargins()
+        item_w = max(1, vw - margins.left() - margins.right())
+        heights = []
+        for i in range(lay.count()):
+            item = lay.itemAt(i)
+            widget = item.widget()
+            if widget is None or widget.isHidden():
+                continue
+            if widget.hasHeightForWidth():
+                heights.append(max(0, widget.heightForWidth(item_w)))
+            else:
+                heights.append(max(0, widget.sizeHint().height()))
+        ch = margins.top() + margins.bottom() + sum(heights)
+        if len(heights) > 1:
+            ch += lay.spacing() * (len(heights) - 1)
+        # A visible scrollbar creates a circular dependency: it narrows the
+        # viewport, which wraps the labels taller, which keeps the scrollbar
+        # visible. First grow enough for the current wrapped content; the
+        # scheduled second pass then removes the extra height at the wider
+        # no-scrollbar width.
+        if sb.isVisible():
+            ch = max(ch, content.height())
         chrome = self.height() - self.scroll.viewport().height()
         return self._clamp_h(chrome + ch)
 
@@ -304,22 +329,41 @@ class OverlayWindow(QWidget):
                           or round(self._base_width * self._scale))
         self._user_width = w
         self._laying = True
+        changed = False
         try:
             if self.width() != w:                # set width first so the body
                 self.resize(w, self.height())    # wraps before we measure it
+                changed = True
             h = (self._clamp_h(self._user_height)
                  if self._user_height is not None else self._natural_height())
             if (w, h) != (self.width(), self.height()):
                 self.resize(w, h)
+                changed = True
         finally:
             self._laying = False
+        self.fit_to_screen()
+        if changed and self._user_height is None:
+            self._schedule_refit()
 
     def showEvent(self, e):
         super().showEvent(e)
         # Widget-visibility and viewport sizes only settle after the window
         # is mapped, so re-apply the sizing one tick later: collapse tight
         # to the header when compact, else fit the auto height to content.
-        QTimer.singleShot(0, self._resettle)
+        self._schedule_refit()
+
+    def _schedule_refit(self):
+        """Run a sizing pass after Qt processes pending visibility/layout
+        changes. Multiple content updates in one event-loop turn collapse
+        into one pass."""
+        if self._refit_pending:
+            return
+        self._refit_pending = True
+        QTimer.singleShot(0, self._run_scheduled_refit)
+
+    def _run_scheduled_refit(self):
+        self._refit_pending = False
+        self._resettle()
 
     def _resettle(self):
         if self._compact:
@@ -345,6 +389,19 @@ class OverlayWindow(QWidget):
             self.resize(self._user_width, self._user_height)
         finally:
             self._laying = False
+        self.fit_to_screen()
+
+    def fit_to_screen(self):
+        """Keep the whole card, including its bottom-right grip, on-screen."""
+        scr = self.screen() or QApplication.primaryScreen()
+        if scr is None:
+            return
+        geo = scr.availableGeometry()
+        x, y = clamp_position(
+            self.x(), self.y(), self.width(), self.height(),
+            geo.left(), geo.top(), geo.width(), geo.height())
+        if (x, y) != (self.x(), self.y()):
+            self.move(x, y)
 
     def persist_size(self):
         """Save the current expanded size (called on grip release)."""
@@ -375,7 +432,7 @@ class OverlayWindow(QWidget):
             self._state.set("appearance", "font_pt", self._base_pt)
         self._apply_style()
         self._recolor()                      # re-render spans in new colors
-        self._refit()                        # a bigger font needs more height
+        self._schedule_refit()               # a bigger font needs more height
         if self._panel_restyle:              # keep the layout panel in step —
             self._panel_restyle(              # font size included, so 18pt on
                 self._roles, theme.panel_pt(self._base_pt))  # the card scales it
@@ -425,7 +482,7 @@ class OverlayWindow(QWidget):
         self._meta_bits = bits
         self._render_meta()
         self.nxt.setText(f"next: {peek['zone']}" if peek else "— end of route —")
-        self._refit()
+        self._schedule_refit()
 
     def set_level(self, lvl):
         self.level = lvl
@@ -444,7 +501,7 @@ class OverlayWindow(QWidget):
             return
         self._status_text = text
         self._render_meta()
-        self._refit()
+        self._schedule_refit()
 
     def _render_meta(self):
         bits = list(self._meta_bits)
@@ -467,12 +524,12 @@ class OverlayWindow(QWidget):
             f"<span style='color:{self._roles['meta']}'>— "
             f"{html.escape(str(reason))}</span>")
         self.item.setVisible(not self._compact)
-        self._refit()
+        self._schedule_refit()
         self._item_timer.start(ms)
 
     def _hide_item(self):
         self.item.setVisible(False)
-        self._refit()
+        self._schedule_refit()
 
     # -- party row ----------------------------------------------------------
     def set_party(self, text):
@@ -481,7 +538,7 @@ class OverlayWindow(QWidget):
         if not self._flashing:
             self.party.setText(text)
             self.party.setVisible(bool(text) and not self._compact)
-            self._refit()
+            self._schedule_refit()
 
     def flash(self, text, ms=6000):
         """Show an urgent message on the party row, then restore it.
@@ -498,6 +555,7 @@ class OverlayWindow(QWidget):
         self._flashing = False
         if self._compact:
             self.party.setVisible(False)     # back to a bare header line
+            self._schedule_refit()
         else:
             self.set_party(self._party_text)
 
