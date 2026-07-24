@@ -12,7 +12,8 @@ sys.path[:0] = [os.path.join(ROOT, "overlay"), os.path.join(ROOT, "tools"),
 
 from client_watcher import last_area, parse_line       # noqa: E402
 from layout_index import LayoutIndex                   # noqa: E402
-from ui_state import UiState, clamp_scale, valid_pos   # noqa: E402
+from ui_state import (UiState, clamp_scale, clamp_size,    # noqa: E402
+                      valid_pos)
 from main import dispatch_events                       # noqa: E402
 from route_engine import RouteEngine                   # noqa: E402
 from party_state import PartyState                     # noqa: E402
@@ -112,6 +113,13 @@ assert valid_pos([40.5, 140]) is None
 assert valid_pos([True, False]) is None
 assert valid_pos("40,140") is None
 assert valid_pos(None) is None
+
+# clamp_size keeps the overlay (and its resize grip) within screen bounds
+assert clamp_size(500, 350, 200, 1200, 1, 2000) == (500, 350)   # already inside
+assert clamp_size(1200, 2000, 200, 800, 1, 800) == (800, 800), \
+    "1200x2000 restored on an 800x800 display is capped on-screen"
+assert clamp_size(50, 5, 200, 1200, 107, 2000) == (200, 107), "floors applied"
+assert clamp_size(360.0, 220.9, 200, 1200, 1, 2000) == (360, 220), "coerced to int"
 
 tmp = tempfile.mkdtemp()
 try:

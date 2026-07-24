@@ -60,15 +60,18 @@ class LayoutPanel(QWidget):
         self.row.setSpacing(6)
         self._inner.addLayout(self.row)
 
-        # Match the card's chosen mode/palette (theme.py); the overlay
-        # calls apply_theme() on later changes so the two never diverge.
+        # Match the card's chosen mode/palette AND font size (theme.py); the
+        # overlay calls apply_theme() on later changes so the two never
+        # diverge — including when the settings font size changes.
         mode = state.get("appearance", "mode") if state else None
         palette = state.get("appearance", "palette") if state else None
-        self.apply_theme(theme.resolve(palette, mode))
+        base_pt = (state.get("appearance", "font_pt") if state else None) or 11
+        self.apply_theme(theme.resolve(palette, mode), theme.panel_pt(base_pt))
 
-    def apply_theme(self, roles):
-        """Restyle to a resolved theme.py role dict (from the card)."""
-        self.setStyleSheet(theme.panel_qss(roles))
+    def apply_theme(self, roles, pt=8):
+        """Restyle to a resolved theme.py role dict + caption size (from
+        the card, so the panel tracks the settings font size)."""
+        self.setStyleSheet(theme.panel_qss(roles, pt))
 
     # -- content ------------------------------------------------------------
     def set_area(self, area_id):

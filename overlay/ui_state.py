@@ -39,6 +39,14 @@ def valid_pos(value):
     return None
 
 
+def clamp_size(w, h, min_w, max_w, min_h, max_h):
+    """Clamp (w, h) into the given bounds -> (int, int). Pure so the
+    overlay's screen-fit math (keep the resize grip on-screen) is testable
+    without Qt. Bounds are assumed sane (min <= max)."""
+    return (max(min_w, min(max_w, int(w))),
+            max(min_h, min(max_h, int(h))))
+
+
 def valid_size(value):
     """[w, h] positive ints -> (w, h); anything else -> None. A stale or
     hand-broken size must never resize the window to zero/negative."""

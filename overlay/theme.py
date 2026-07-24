@@ -188,6 +188,13 @@ def clamp_font(value) -> int:
     return min(FONT_MAX, max(FONT_MIN, value))
 
 
+def panel_pt(base_pt) -> int:
+    """Caption point size for the zone-layout panel, derived from the card's
+    font size so the settings font control scales the panel too (default
+    11pt card -> 8pt caption, matching the original look)."""
+    return max(6, clamp_font(base_pt) - 3)
+
+
 def kind_color(roles: dict, kind: str) -> str:
     return roles.get(_KIND_ROLE.get(kind, "kind_travel"), roles["kind_travel"])
 

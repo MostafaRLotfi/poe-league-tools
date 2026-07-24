@@ -57,6 +57,14 @@ assert theme.clamp_font(13) == 13
 assert theme.clamp_font("x") == 11
 assert theme.FONT_MIN <= theme.clamp_font(None) <= theme.FONT_MAX
 
+# panel caption tracks the card font size (settings 18pt scales the panel)
+assert theme.panel_pt(11) == 8, "default 11pt card -> 8pt caption (unchanged)"
+assert theme.panel_pt(18) == 15
+assert theme.panel_pt(7) == 6, "never below the 6pt floor"
+assert theme.panel_pt("junk") == 8, "junk font -> default caption"
+# panel_qss actually renders that size
+assert "15pt" in theme.panel_qss(theme.resolve("default", "dark"), 15)
+
 # ------------------------------------------------ inline span colors
 dark = theme.resolve("default", "dark")
 assert theme.kind_color(dark, "kill") == dark["kind_kill"]

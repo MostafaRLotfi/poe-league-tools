@@ -15,12 +15,13 @@ QSS builders, so the color/sizing logic is unit-tested headless.
 import html
 
 from PyQt6.QtCore import QEvent, Qt, QTimer
-from PyQt6.QtWidgets import (QFrame, QHBoxLayout, QLabel, QPushButton,
-                             QScrollArea, QSizePolicy, QVBoxLayout, QWidget)
+from PyQt6.QtWidgets import (QAbstractScrollArea, QApplication, QFrame,
+                             QHBoxLayout, QLabel, QPushButton, QScrollArea,
+                             QSizePolicy, QVBoxLayout, QWidget)
 
 import theme
 from build_notes import select_note, select_passives
-from ui_state import clamp_scale, valid_size
+from ui_state import clamp_scale, clamp_size, valid_size
 
 # Resize bounds for the card. Wide enough to read a step, narrow enough to
 # tuck into a screen edge; the minimum height is derived from the header +
@@ -81,7 +82,12 @@ class OverlayWindow(QWidget):
         self._status_text = ""               # run-tracker timer/XP bit
         self._last_render = None             # (step, progress, peek) for recolor
         self._panel_restyle = None           # optional layout-panel theme hook
-        self._expanded_height = None         # remembered height for un-collapse
+        # Size model. card.size (persisted) is always the EXPANDED size.
+        # _user_height None => auto-fit to content; an int => the user
+        # fixed it with the grip and the body scrolls to fit.
+        self._user_width = None
+        self._user_height = None
+        self._laying = False                 # reentrancy guard for internal resizes
 
         self._state = state
         self._cfg = cfg
@@ -192,18 +198,24 @@ class OverlayWindow(QWidget):
         self._flash_timer.timeout.connect(self._end_flash)
 
         self._apply_style()
-        if self._compact:
-            self._apply_compact()
 
-        # Restore the saved size (width + height are both user-controlled
-        # now); a missing/corrupt size falls back to config width × zoom
-        # and a natural content height.
+        # Restore the saved (expanded) size. card.size is only ever written
+        # while NOT compact, so it is always the expanded size: a compact
+        # restore collapses to the header yet remembers this size for when
+        # the card is expanded again (fixes the "large blank overlay" bug).
         saved = valid_size(state.get("card", "size")) if state else None
         if saved:
-            self.resize(self._clamp_w(saved[0]), self._clamp_h(saved[1]))
+            self._user_width = self._clamp_w(saved[0])
+            self._user_height = self._clamp_h(saved[1])   # user-fixed height
         else:
-            self.resize(self._clamp_w(round(self._base_width * self._scale)),
-                        self.sizeHint().height())
+            self._user_width = self._clamp_w(
+                round(self._base_width * self._scale))
+            self._user_height = None                       # auto-fit content
+        self.resize(self._user_width, self.sizeHint().height())
+        if self._compact:
+            self._apply_compact()
+        else:
+            self._apply_expanded_size()
         self._ready = True
 
     # -- styling ----------------------------------------------------------
@@ -214,14 +226,27 @@ class OverlayWindow(QWidget):
         self._update_min_height()
 
     def _update_min_height(self):
-        """Floor the card at title + one instruction row (tracks the font).
-        Relaxed to nothing while compact so it can collapse to the header."""
+        """Floor the card at title + one instruction row (tracks the font),
+        and cap the max size to the current screen so the grip can never be
+        dragged (or a saved size restored) off-screen. Relaxed to nothing
+        while compact so it can collapse to the header."""
         line = self.fontMetrics().height()
         self.scroll.setMinimumHeight(line + 6)
+        aw, ah = self._avail()
+        self.setMaximumWidth(max(MIN_WIDTH, min(MAX_WIDTH, aw)))
+        self.setMaximumHeight(min(MAX_HEIGHT, ah))
         if self._compact:
             self.setMinimumHeight(0)
         else:
             self.setMinimumHeight(self.minimumSizeHint().height())
+
+    def _avail(self):
+        """(width, height) of the available screen area, for size caps."""
+        scr = self.screen() or QApplication.primaryScreen()
+        if scr is not None:
+            g = scr.availableGeometry()
+            return g.width(), g.height()
+        return MAX_WIDTH, MAX_HEIGHT
 
     def set_scale(self, value):
         value = clamp_scale(value)
@@ -229,31 +254,102 @@ class OverlayWindow(QWidget):
             return
         self._scale = value
         self._apply_style()
+        self._refit()
         if self._state:
             self._state.set("card", "scale", value)
 
     # -- resize -----------------------------------------------------------
     def _clamp_w(self, w):
-        return min(MAX_WIDTH, max(MIN_WIDTH, int(w)))
+        aw, _ = self._avail()
+        return clamp_size(w, 1, MIN_WIDTH, min(MAX_WIDTH, aw), 1, 1)[0]
 
     def _clamp_h(self, h):
-        # Clamp to the floor Qt actually enforces (set in _apply_style), so
-        # the value we store round-trips to the same height on restore.
+        # Floor at what Qt enforces (title + one row), cap at the screen so
+        # the grip stays reachable, so a stored height round-trips exactly.
+        _, ah = self._avail()
         floor = max(1, self.minimumHeight())
-        return min(MAX_HEIGHT, max(floor, int(h)))
+        return clamp_size(1, h, 1, 1, floor, min(MAX_HEIGHT, ah))[1]
+
+    def _natural_height(self):
+        """Height that shows all scroll content with no scrollbar: the fixed
+        chrome (header, party, grip, margins) plus the content's wrapped
+        height at the current width. chrome is read live as
+        window - viewport, so it is exact for whichever rows are visible —
+        the first render is never undersized. The viewport size is only
+        trustworthy once the window is mapped; before the first show it
+        falls back to sizeHint and showEvent re-fits once it is real."""
+        if not self.isVisible():
+            return self._clamp_h(self.sizeHint().height())
+        content = self.scroll.widget()
+        lay = content.layout()
+        # Wrap width once fitted = the viewport with NO scrollbar. If a
+        # scrollbar is showing right now it is stealing that width, so add
+        # it back before measuring, or the body would wrap taller than the
+        # fitted state and leave a strip hidden.
+        vw = self.scroll.viewport().width()
+        sb = self.scroll.verticalScrollBar()
+        if sb.isVisible():
+            vw += sb.width()
+        ch = (lay.heightForWidth(vw) if lay and lay.hasHeightForWidth()
+              else content.sizeHint().height())
+        chrome = self.height() - self.scroll.viewport().height()
+        return self._clamp_h(chrome + ch)
+
+    def _apply_expanded_size(self):
+        """Size the (non-compact) card: user width, and either the height
+        the user fixed with the grip or an auto height that fits content."""
+        if self._compact:
+            return
+        w = self._clamp_w(self._user_width
+                          or round(self._base_width * self._scale))
+        self._user_width = w
+        self._laying = True
+        try:
+            if self.width() != w:                # set width first so the body
+                self.resize(w, self.height())    # wraps before we measure it
+            h = (self._clamp_h(self._user_height)
+                 if self._user_height is not None else self._natural_height())
+            if (w, h) != (self.width(), self.height()):
+                self.resize(w, h)
+        finally:
+            self._laying = False
+
+    def showEvent(self, e):
+        super().showEvent(e)
+        # Widget-visibility and viewport sizes only settle after the window
+        # is mapped, so re-apply the sizing one tick later: collapse tight
+        # to the header when compact, else fit the auto height to content.
+        QTimer.singleShot(0, self._resettle)
+
+    def _resettle(self):
+        if self._compact:
+            self._apply_compact()
+        else:
+            self._refit()
+
+    def _refit(self):
+        """Re-fit height to content after a content change, but only while
+        the height is still auto (the user hasn't fixed it with the grip)."""
+        if self._ready and not self._compact and self._user_height is None:
+            self._apply_expanded_size()
 
     def resize_to(self, w, h):
-        """Clamped resize driven by the corner grip."""
-        self.resize(self._clamp_w(w), self._clamp_h(h))
+        """Grip-driven resize. This is the ONLY path that fixes the height:
+        it records the size as the user's chosen expanded size (so the body
+        now scrolls to fit) — as opposed to show()/relayout resizes, which
+        must not flip the card out of auto-fit mode."""
+        self._user_width = self._clamp_w(w)
+        self._user_height = self._clamp_h(h)
+        self._laying = True
+        try:
+            self.resize(self._user_width, self._user_height)
+        finally:
+            self._laying = False
 
     def persist_size(self):
-        if self._state and not self._compact:
+        """Save the current expanded size (called on grip release)."""
+        if self._state and self._ready and not self._compact:
             self._state.set("card", "size", [self.width(), self.height()])
-
-    def resizeEvent(self, e):
-        super().resizeEvent(e)
-        if self._ready and not self._compact:
-            self.persist_size()
 
     def eventFilter(self, obj, ev):
         # Keep wheel = zoom everywhere on the card, including over the
@@ -279,8 +375,10 @@ class OverlayWindow(QWidget):
             self._state.set("appearance", "font_pt", self._base_pt)
         self._apply_style()
         self._recolor()                      # re-render spans in new colors
-        if self._panel_restyle:              # keep the layout panel in step
-            self._panel_restyle(self._roles)
+        self._refit()                        # a bigger font needs more height
+        if self._panel_restyle:              # keep the layout panel in step —
+            self._panel_restyle(              # font size included, so 18pt on
+                self._roles, theme.panel_pt(self._base_pt))  # the card scales it
 
     def set_panel_restyler(self, callback):
         """main() wires this to restyle the zone-layout panel together with
@@ -327,6 +425,7 @@ class OverlayWindow(QWidget):
         self._meta_bits = bits
         self._render_meta()
         self.nxt.setText(f"next: {peek['zone']}" if peek else "— end of route —")
+        self._refit()
 
     def set_level(self, lvl):
         self.level = lvl
@@ -345,6 +444,7 @@ class OverlayWindow(QWidget):
             return
         self._status_text = text
         self._render_meta()
+        self._refit()
 
     def _render_meta(self):
         bits = list(self._meta_bits)
@@ -367,10 +467,12 @@ class OverlayWindow(QWidget):
             f"<span style='color:{self._roles['meta']}'>— "
             f"{html.escape(str(reason))}</span>")
         self.item.setVisible(not self._compact)
+        self._refit()
         self._item_timer.start(ms)
 
     def _hide_item(self):
         self.item.setVisible(False)
+        self._refit()
 
     # -- party row ----------------------------------------------------------
     def set_party(self, text):
@@ -379,6 +481,7 @@ class OverlayWindow(QWidget):
         if not self._flashing:
             self.party.setText(text)
             self.party.setVisible(bool(text) and not self._compact)
+            self._refit()
 
     def flash(self, text, ms=6000):
         """Show an urgent message on the party row, then restore it.
@@ -416,12 +519,24 @@ class OverlayWindow(QWidget):
 
     def _apply_compact(self):
         if self._compact:
-            self._expanded_height = self.height()
+            # Collapse to the header. _user_width/_user_height are left
+            # untouched (card.size stays the expanded size), so expanding
+            # restores exactly what was saved — never a big blank overlay.
             self.scroll.setVisible(False)
             self.grip.setVisible(False)
             self.party.setVisible(self._flashing)   # only a live death shows
-            self._update_min_height()        # drop the floor so it collapses
-            self.adjustSize()                # shrink to the header line
+            self._laying = True
+            try:
+                self.setMinimumHeight(0)     # drop the floor so it collapses
+                # Force the layout to account for the just-hidden body NOW
+                # (setVisible defers it), else the header-only height is
+                # still computed with the body's rows in it.
+                self.layout().invalidate()
+                self.layout().activate()
+                h = self.minimumSizeHint().height()   # header line + margins
+                self.resize(self._clamp_w(self._user_width or self.width()), h)
+            finally:
+                self._laying = False
         else:
             self.scroll.setVisible(True)
             self.grip.setVisible(True)
@@ -429,8 +544,7 @@ class OverlayWindow(QWidget):
             if not self._flashing:
                 self.party.setVisible(bool(self._party_text))
             self._update_min_height()        # restore the title + row floor
-            if self._expanded_height:
-                self.resize(self.width(), self._clamp_h(self._expanded_height))
+            self._apply_expanded_size()      # user width + fixed/auto height
 
     def toggle_clickthrough(self):
         # setWindowFlags hides the window as a side effect; only re-show
