@@ -149,18 +149,27 @@ the wizard persists what it finds, or set `client_txt` in
 Point them at `FRIENDS.md`.
 
 Hotkeys (global on
-Windows): **F2/F3** prev/next step · **F4** hide · **F6** click-through,
-card and layouts panel together · **F7** layouts panel hide/show ·
-**F8** speak the current step · **F9** narration mute ·
+Windows): **F1** settings · **F2/F3** prev/next step · **F4** hide ·
+**F6** click-through, card and layouts panel together · **F7** layouts
+panel hide/show · **F8** speak the current step · **F9** narration mute ·
 **F10** choose another prepared PoB
 (F6 is Windows-only — the non-Windows fallback shortcuts could not undo it;
 F8/F9 exist only when narration is enabled).
 
-Getting in the way of clicking? **Mouse-wheel** over the card (or the
-layouts panel) resizes it, **double-click** collapses the card to just
-its header line, **F6** makes everything click-through. Sizes and
-positions persist across restarts (`overlay/ui_state.json`,
-machine-written — not part of the shared config).
+**Settings** (the **⚙** gear on the card, or **F1** — the only way in
+while click-through): **dark / light mode**, a **font size** picker, and a
+**color palette** dropdown — *Default*, *High contrast*, *Color-blind
+friendly* (Okabe-Ito hues), and *Easy on the eyes* (warm, low-glare).
+Changes apply live to both the card and the layouts panel.
+
+Getting in the way of clicking? **Drag the ◢ handle** in the bottom-right
+corner to resize the card freely — shrink it down to the act/title line
+plus a row of instructions and the step text **scrolls** in whatever space
+is left (a thin scrollbar appears only when it overflows). **Mouse-wheel**
+over the card (or the layouts panel) zooms the font, **double-click**
+collapses the card to just its header line, **F6** makes everything
+click-through. Appearance, sizes and positions persist across restarts
+(`overlay/ui_state.json`, machine-written — not part of the shared config).
 
 What the card shows: current step checklist + layout/tips + gem notes;
 `● Name lvl` party row (● in your area, ⚠ level-gap ≥ `gap_warn`, ☠ deaths,
@@ -398,6 +407,8 @@ leveling guide (differences are usually deliberate skips).
 - [x] Per-user Windows installer: Start-menu app, first-run PoB picker,
       writable `%LOCALAPPDATA%` state, upgrades and uninstaller
 - [x] Zone-layout panel (Exile-UI image pack, F7) · resizable/compact
+- [x] Appearance settings (F1 / ⚙): dark-light mode, font size,
+      accessible color palettes; grip-resizable card
       overlay · routes cross-checked against community data
 - [ ] **Before Jul 20:** Mirage rehearsal — 24 h daemon run, tune the
       price-fixing filter, capture real clipboard fixtures (see DECISIONS.md)

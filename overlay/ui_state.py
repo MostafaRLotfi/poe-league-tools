@@ -12,8 +12,13 @@ import os
 SCALE_MIN, SCALE_MAX = 0.5, 2.5
 
 DEFAULTS = {
-    "card":    {"scale": 1.0, "pos": None, "compact": False},
+    "card":    {"scale": 1.0, "pos": None, "compact": False, "size": None},
     "layouts": {"scale": 1.0, "pos": None},
+    # Appearance chosen in the settings dialog (settings_dialog.py); read
+    # by overlay_window/layout_panel through theme.py. font_pt None ->
+    # fall back to config.json's font_pt so an untouched install is
+    # unchanged.
+    "appearance": {"mode": "dark", "palette": "default", "font_pt": None},
 }
 
 
@@ -29,6 +34,16 @@ def valid_pos(value):
     """[x, y] ints -> (x, y); anything else -> None."""
     if (isinstance(value, (list, tuple)) and len(value) == 2
             and all(isinstance(v, int) and not isinstance(v, bool)
+                    for v in value)):
+        return tuple(value)
+    return None
+
+
+def valid_size(value):
+    """[w, h] positive ints -> (w, h); anything else -> None. A stale or
+    hand-broken size must never resize the window to zero/negative."""
+    if (isinstance(value, (list, tuple)) and len(value) == 2
+            and all(isinstance(v, int) and not isinstance(v, bool) and v > 0
                     for v in value)):
         return tuple(value)
     return None

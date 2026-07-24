@@ -55,7 +55,7 @@ DEFAULT_CONFIG = {
     },
     "party": {"me": "", "members": [], "gap_warn": 3},
     "hotkeys": {"prev": "F2", "next": "F3", "toggle": "F4",
-                "clickthrough": "F6", "layouts": "F7",
+                "settings": "F1", "clickthrough": "F6", "layouts": "F7",
                 "narrate_repeat": "F8", "narrate_toggle": "F9",
                 "choose_build": "F10"},
 }

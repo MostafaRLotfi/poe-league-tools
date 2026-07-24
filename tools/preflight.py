@@ -36,7 +36,9 @@ KNOWN_KEYS = {"client_txt", "poll_ms", "opacity", "width", "font_pt",
               "timer", "runs_dir", "item_eval", "links_best", "party",
               "hotkeys", "league"}
 KNOWN_PARTY_KEYS = {"me", "members", "gap_warn"}
-KNOWN_HOTKEYS = {"prev", "next", "toggle", "clickthrough"}
+KNOWN_HOTKEYS = {"prev", "next", "toggle", "settings", "clickthrough",
+                 "layouts", "narrate_repeat", "narrate_toggle",
+                 "choose_build"}
 
 STALE_LOG_DAYS = 7
 TAIL_BYTES = 262144

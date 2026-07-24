@@ -293,6 +293,11 @@ def main(argv=None):
                   "          run  python tools/fetch_layouts.py  once to "
                   "enable zone-layout images (optional)")
 
+    # Restyle the layouts panel together with the card so a mode/palette
+    # change from the settings dialog never leaves the two mismatched.
+    if panel is not None:
+        win.set_panel_restyler(panel.apply_theme)
+
     bn = cfg.get("build_notes")
     build_id = None
     if bn and os.path.exists(resolve(bn)):
@@ -473,6 +478,7 @@ def main(argv=None):
         hk.get("prev", "F2"): on_prev,
         hk.get("next", "F3"): on_next,
         hk.get("toggle", "F4"): win.toggle_visible,
+        hk.get("settings", "F1"): win.open_settings,
         hk.get("choose_build", "F10"): change_build,
     }
     if panel is not None:

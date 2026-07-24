@@ -15,6 +15,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import (QFrame, QHBoxLayout, QLabel, QVBoxLayout,
                              QWidget)
 
+import theme
 from ui_state import clamp_scale
 
 BASE_IMG_W = 240        # on-screen width of one layout image at scale 1.0
@@ -59,14 +60,15 @@ class LayoutPanel(QWidget):
         self.row.setSpacing(6)
         self._inner.addLayout(self.row)
 
-        self.setStyleSheet("""
-            #card { background: rgba(14, 16, 21, 210);
-                    border: 1px solid #2a2f3a; border-radius: 10px; }
-            #cap  { color: #8fa3bf; font-size: 8pt; letter-spacing: 1px;
-                    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif; }
-            QLabel[variantNo="true"] { color: #c9a44a; font-size: 10pt;
-                    font-weight: bold; }
-        """)
+        # Match the card's chosen mode/palette (theme.py); the overlay
+        # calls apply_theme() on later changes so the two never diverge.
+        mode = state.get("appearance", "mode") if state else None
+        palette = state.get("appearance", "palette") if state else None
+        self.apply_theme(theme.resolve(palette, mode))
+
+    def apply_theme(self, roles):
+        """Restyle to a resolved theme.py role dict (from the card)."""
+        self.setStyleSheet(theme.panel_qss(roles))
 
     # -- content ------------------------------------------------------------
     def set_area(self, area_id):

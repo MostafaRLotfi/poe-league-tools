@@ -55,6 +55,7 @@ this file wins; propose changes here rather than silently diverging.
 | chaos-recipe | `market/stashapi.py`, `tools/chaos_recipe.py`, `tests/fixtures_stash/`, `tests/test_chaos_recipe.py` |
 | filtergen | `filtergen/*.py`, `tools/filter_update.py`, `data/filter_tiers.json`, `tests/fixtures_filtergen/`, `tests/test_filtergen.py` |
 | mechanic-tracker | `overlay/mechanic_tracker.py`, `tools/allflame.py`, `data/3.29/mechanic_lines.json`, `tests/fixtures_mechanic/`, `tests/test_mechanic_tracker.py` |
+| overlay-appearance | `overlay/theme.py`, `overlay/settings_dialog.py`, `tests/test_theme.py` |
 
 Do not create or edit files outside your row. `data/` files not listed are
 free for their owner. Directories are created implicitly by writing files.
