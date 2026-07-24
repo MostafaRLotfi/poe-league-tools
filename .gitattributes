@@ -1,0 +1,9 @@
+# Byte-exact test fixtures: suites compare these files byte-for-byte
+# (e.g. test_filtergen's splice preservation assert), so git must never
+# rewrite their line endings on checkout — the Windows CI runner checks
+# out with autocrlf=true, which turned LF fixtures into CRLF and broke
+# the v3.29.2 build.
+tests/fixtures_filtergen/* -text
+tests/fixtures_gear/* -text
+tests/fixtures_mechanic/* -text
+tests/fixtures_stash/* -text

@@ -191,7 +191,10 @@ def main(argv=None):
 
     print(f"Candidate: {candidate['name']} ({candidate['base']}), "
           f"{candidate['rarity']}, ilvl {candidate['ilvl']}")
-    shown = os.path.relpath(bundle, ROOT)
+    try:
+        shown = os.path.relpath(bundle, ROOT)
+    except ValueError:  # Windows: bundle on a different drive than the repo
+        shown = bundle
     if shown.startswith(".."):
         shown = bundle
     print(f"Slot(s) checked: {', '.join(slots)}   [bundle: {shown}]")
