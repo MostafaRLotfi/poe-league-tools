@@ -13,7 +13,7 @@ SCALE_MIN, SCALE_MAX = 0.5, 2.5
 
 DEFAULTS = {
     "card":    {"scale": 1.0, "pos": None, "compact": False, "size": None},
-    "layouts": {"scale": 1.0, "pos": None},
+    "layouts": {"scale": 1.0, "pos": None, "visible": True},
     # Appearance chosen in the settings dialog (settings_dialog.py); read
     # by overlay_window/layout_panel through theme.py. font_pt None ->
     # fall back to config.json's font_pt so an untouched install is

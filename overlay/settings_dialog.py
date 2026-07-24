@@ -10,9 +10,9 @@ theme.py (pure) holds the palette list and bounds this reads, so the
 choices here and the colors they map to can be tested without Qt.
 """
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QButtonGroup, QComboBox, QDialog, QFormLayout,
-                             QHBoxLayout, QLabel, QRadioButton, QSpinBox,
-                             QVBoxLayout)
+from PyQt6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QDialog,
+                             QFormLayout, QHBoxLayout, QLabel, QRadioButton,
+                             QSpinBox, QVBoxLayout)
 
 import theme
 
@@ -66,6 +66,19 @@ class SettingsDialog(QDialog):
         self._font.setValue(theme.clamp_font(font_pt))
         self._font.valueChanged.connect(self._changed)
         form.addRow("Font size", self._font)
+
+        # -- map (zone-layout) overlay on/off -----------------------------
+        self._map = QCheckBox("Show the zone-layout overlay")
+        map_state = overlay.map_overlay_state()
+        if map_state is None:                 # no image pack / layouts off
+            self._map.setChecked(False)
+            self._map.setEnabled(False)
+            self._map.setToolTip("No zone-layout image pack installed "
+                                 "(run tools/fetch_layouts.py to enable it).")
+        else:
+            self._map.setChecked(map_state)
+            self._map.toggled.connect(overlay.set_map_overlay)
+        form.addRow("Map overlay", self._map)
 
         hint = QLabel("Drag the corner grip to resize · wheel to zoom · "
                       "double-click to collapse")

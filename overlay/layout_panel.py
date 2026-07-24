@@ -33,7 +33,10 @@ class LayoutPanel(QWidget):
         self._area = None
         self._variants = []              # [(head, [paths])] for _area
         self._pinned = None              # head token, or None = show all
-        self._user_hidden = False        # F7 latch; wins over auto_show
+        # Persisted master on/off (F7 and the settings toggle both drive
+        # it); off hides the panel and stops it auto-opening on new zones.
+        vis = state.get("layouts", "visible") if state else None
+        self._enabled = True if vis is None else bool(vis)
         self._drag = None
         self._dragged = False
         self._press_child = None
@@ -87,7 +90,7 @@ class LayoutPanel(QWidget):
             self.hide()
             return
         self._rebuild()
-        if self._auto_show and not self._user_hidden:
+        if self._auto_show and self._enabled:
             self.show()
 
     def _clear_row(self):
@@ -163,16 +166,28 @@ class LayoutPanel(QWidget):
 
     # -- window behaviour -----------------------------------------------------
     def toggle_visible(self):
-        """F7: hide/show. Hiding latches until F7 again -- entering the
-        next zone must not undo an explicit 'go away'."""
-        if self.isVisible():
-            self._user_hidden = True
-            self.hide()
-        else:
-            self._user_hidden = False
+        """F7 / settings toggle: hide or show the panel. The choice is
+        persisted and latches -- entering the next zone won't reopen a
+        panel you turned off."""
+        self.set_enabled(not self.isVisible())
+
+    def set_enabled(self, on):
+        """Master on/off for the map overlay, persisted to UiState. Off
+        hides it and stops the auto-open on new zones; on reopens it if a
+        zone is currently loaded."""
+        on = bool(on)
+        self._enabled = on
+        if self._state:
+            self._state.set("layouts", "visible", on)
+        if on:
             if self._variants:
                 self._rebuild()
                 self.show()
+        else:
+            self.hide()
+
+    def is_enabled(self):
+        return self._enabled
 
     def toggle_clickthrough(self):
         was_visible = self.isVisible()

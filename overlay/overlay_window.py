@@ -82,6 +82,8 @@ class OverlayWindow(QWidget):
         self._status_text = ""               # run-tracker timer/XP bit
         self._last_render = None             # (step, progress, peek) for recolor
         self._panel_restyle = None           # optional layout-panel theme hook
+        self._map_is_enabled = None          # layout-panel on/off hooks (main())
+        self._map_set_enabled = None
         # Size model. card.size (persisted) is always the EXPANDED size.
         # _user_height None => auto-fit to content; an int => the user
         # fixed it with the grip and the body scrolls to fit.
@@ -384,6 +386,23 @@ class OverlayWindow(QWidget):
         """main() wires this to restyle the zone-layout panel together with
         the card, so a theme change never leaves a mismatched window."""
         self._panel_restyle = callback
+
+    def set_map_overlay_hook(self, is_enabled, set_enabled):
+        """main() wires the zone-layout panel's on/off here so the settings
+        dialog can drive it. Left unset when no panel exists (layouts
+        disabled or no image pack), which the dialog shows as unavailable."""
+        self._map_is_enabled = is_enabled
+        self._map_set_enabled = set_enabled
+
+    def map_overlay_state(self):
+        """True/False when a map overlay exists, else None (unavailable)."""
+        if self._map_is_enabled is None:
+            return None
+        return bool(self._map_is_enabled())
+
+    def set_map_overlay(self, on):
+        if self._map_set_enabled is not None:
+            self._map_set_enabled(bool(on))
 
     def open_settings(self):
         from settings_dialog import SettingsDialog

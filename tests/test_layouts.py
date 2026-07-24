@@ -126,11 +126,14 @@ try:
     path = os.path.join(tmp, "ui_state.json")
     st = UiState(path)
     assert st.get("card", "scale") == 1.0       # defaults
+    assert st.get("layouts", "visible") is True  # map overlay on by default
     st.set("card", "scale", 1.3)
     st.set("layouts", "pos", [700, 200])
+    st.set("layouts", "visible", False)          # settings/F7 toggle off
     st2 = UiState(path)                          # round-trips
     assert st2.get("card", "scale") == 1.3
     assert valid_pos(st2.get("layouts", "pos")) == (700, 200)
+    assert st2.get("layouts", "visible") is False
     assert st2.get("card", "compact") is False   # untouched default intact
 
     with open(path, "w", encoding="utf-8") as f:

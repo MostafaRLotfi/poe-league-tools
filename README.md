@@ -157,10 +157,12 @@ panel hide/show · **F8** speak the current step · **F9** narration mute ·
 F8/F9 exist only when narration is enabled).
 
 **Settings** (the **⚙** gear on the card, or **F1** — the only way in
-while click-through): **dark / light mode**, a **font size** picker, and a
+while click-through): **dark / light mode**, a **font size** picker, a
 **color palette** dropdown — *Default*, *High contrast*, *Color-blind
-friendly* (Okabe-Ito hues), and *Easy on the eyes* (warm, low-glare).
-Changes apply live to both the card and the layouts panel.
+friendly* (Okabe-Ito hues), and *Easy on the eyes* (warm, low-glare) — and
+a **Show the zone-layout overlay** toggle (the same on/off as **F7**, now
+remembered between sessions). Changes apply live to both the card and the
+layouts panel.
 
 Getting in the way of clicking? **Drag the ◢ handle** in the bottom-right
 corner to resize the card freely — shrink it down to the act/title line

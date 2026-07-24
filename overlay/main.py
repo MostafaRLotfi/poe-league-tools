@@ -294,9 +294,11 @@ def main(argv=None):
                   "enable zone-layout images (optional)")
 
     # Restyle the layouts panel together with the card so a mode/palette
-    # change from the settings dialog never leaves the two mismatched.
+    # change from the settings dialog never leaves the two mismatched, and
+    # let the settings dialog turn the map overlay on/off.
     if panel is not None:
         win.set_panel_restyler(panel.apply_theme)
+        win.set_map_overlay_hook(panel.is_enabled, panel.set_enabled)
 
     bn = cfg.get("build_notes")
     build_id = None
