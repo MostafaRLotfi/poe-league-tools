@@ -84,6 +84,7 @@ class OverlayWindow(QWidget):
         self._panel_restyle = None           # optional layout-panel theme hook
         self._map_is_enabled = None          # layout-panel on/off hooks (main())
         self._map_set_enabled = None
+        self._settings_dialog = None         # open dialog, kept in sync on F7
         # Size model. card.size (persisted) is always the EXPANDED size.
         # _user_height None => auto-fit to content; an int => the user
         # fixed it with the grip and the body scrolls to fit.
@@ -401,12 +402,26 @@ class OverlayWindow(QWidget):
         return bool(self._map_is_enabled())
 
     def set_map_overlay(self, on):
+        """Turn the map overlay on/off and keep an open settings dialog's
+        checkbox in step (whether the change came from the checkbox itself
+        or from the F7 hotkey)."""
         if self._map_set_enabled is not None:
             self._map_set_enabled(bool(on))
+        if self._settings_dialog is not None:
+            self._settings_dialog.refresh_map()
+
+    def toggle_map_overlay(self):
+        """F7: flip the map overlay. Routed through the card (not straight
+        to the panel) so the settings dialog checkbox stays in sync."""
+        state = self.map_overlay_state()
+        if state is not None:
+            self.set_map_overlay(not state)
 
     def open_settings(self):
         from settings_dialog import SettingsDialog
         dlg = SettingsDialog(self)
+        self._settings_dialog = dlg          # so F7 can refresh its checkbox
+        dlg.destroyed.connect(lambda *_: setattr(self, "_settings_dialog", None))
         dlg.show()                           # modeless: tweak while playing
         dlg.raise_()
         dlg.activateWindow()

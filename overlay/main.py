@@ -484,7 +484,9 @@ def main(argv=None):
         hk.get("choose_build", "F10"): change_build,
     }
     if panel is not None:
-        bindings[hk.get("layouts", "F7")] = panel.toggle_visible
+        # Route F7 through the card so an open settings dialog's checkbox
+        # stays in sync with the panel's on/off state.
+        bindings[hk.get("layouts", "F7")] = win.toggle_map_overlay
     if voice is not None:
         bindings[hk.get("narrate_repeat", "F8")] = narrate_step
         bindings[hk.get("narrate_toggle", "F9")] = voice.toggle

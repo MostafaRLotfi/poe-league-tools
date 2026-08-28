@@ -28,6 +28,9 @@ class SettingsDialog(QDialog):
         self.setWindowTitle("Overlay settings")
         self.setWindowFlags(self.windowFlags()
                             | Qt.WindowType.WindowStaysOnTopHint)
+        # Delete on close so the overlay's reference (destroyed signal)
+        # clears and F7 stops trying to sync a dead dialog.
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         mode, palette, font_pt = overlay.current_appearance()
 
@@ -85,6 +88,17 @@ class SettingsDialog(QDialog):
         hint.setWordWrap(True)
         hint.setStyleSheet("color: palette(mid); font-size: 8pt;")
         form.addRow(hint)
+
+    def refresh_map(self):
+        """Re-sync the checkbox to the overlay's current map state (the F7
+        hotkey can flip it while this dialog is open). Signals are blocked
+        so reflecting the state doesn't loop back into set_map_overlay."""
+        state = self._overlay.map_overlay_state()
+        if state is None:
+            return
+        self._map.blockSignals(True)
+        self._map.setChecked(state)
+        self._map.blockSignals(False)
 
     def _changed(self, *_):
         self._overlay.apply_appearance(

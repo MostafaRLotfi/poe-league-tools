@@ -166,10 +166,13 @@ class LayoutPanel(QWidget):
 
     # -- window behaviour -----------------------------------------------------
     def toggle_visible(self):
-        """F7 / settings toggle: hide or show the panel. The choice is
-        persisted and latches -- entering the next zone won't reopen a
-        panel you turned off."""
-        self.set_enabled(not self.isVisible())
+        """F7 / settings toggle: flip the persisted on/off master switch.
+
+        Toggling _enabled (not visibility) so that pressing it while the
+        panel is momentarily hidden -- between zones, or before the first
+        layout loads -- still turns OFF future auto-opening, instead of
+        re-enabling it."""
+        self.set_enabled(not self._enabled)
 
     def set_enabled(self, on):
         """Master on/off for the map overlay, persisted to UiState. Off
